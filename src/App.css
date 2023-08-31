@@ -1,0 +1,95 @@
+:root {
+  --block-width: 5rem;
+}
+
+div.app {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  z-index: -50;
+}
+
+div#sudoku {
+  background-color: rgb(68, 67, 67);
+  width: calc(9*var(--block-width));
+  height: calc(9*var(--block-width));
+  color: white;
+  margin: auto;
+  display: grid;
+  grid-template-columns: calc(3*var(--block-width)) calc(3*var(--block-width)) calc(3*var(--block-width)) ;
+  border: 0.1rem solid rgb(255, 253, 253);
+}
+
+div.largeblock {
+  width: calc(3*var(--block-width));
+  height: calc(3*var(--block-width));
+  display: grid;
+  grid-template-columns: auto auto auto ;
+  box-sizing:border-box;
+  border: 0.1rem solid rgb(255, 253, 253);
+  
+}
+
+div.block {
+  width: calc(14.8rem/3);
+  height: calc(14.8rem/3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  border: 0.05rem solid rgb(98, 97, 97);
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+  font-size: 3rem;
+  box-sizing: border-box;
+} 
+
+div.block.highlighted {
+  background-color: rgb(81, 80, 80);
+}
+
+div.block.blockSelected {
+  background-color: rgb(243, 243, 195);
+  border: 0.05rem solid rgb(243, 243, 195);
+  color: black;
+}
+
+div.block.unchangable {
+  color: rgb(3, 3, 110);
+  font-weight: bold;
+}
+
+div.block.assistedcolor {
+  color: rgb(67, 241, 32);
+}
+
+div.block.blockSelected.assistedcolor {
+  color: black;
+}
+
+div.block.warning {
+  color: red;
+}
+
+div.block#noteMode {
+  font-size: 1rem;
+  color: rgb(173, 173, 173);
+  
+}
+
+/*----------*/
+
+div#right-side {
+  width: 10rem;
+  border: 0.1rem solid grey;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: darkgrey;
+  color: black;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
