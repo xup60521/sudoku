@@ -178,8 +178,10 @@ const App = () => {
 
 
     } else {
-
-      return;
+      if (e.key == "+") {
+        setnoteMode((o)=>!o)
+      }
+      
 
     }
 
