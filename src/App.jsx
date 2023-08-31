@@ -249,6 +249,25 @@ const App = () => {
           setimmutable(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return false }) }))
         }}>reset
         </button>
+        <button onClick={()=>{
+          setimmutable((prev)=>{
+            sudoku.map((d, i1)=>{
+              d.map((a, i2)=>{
+                if (a !== "") {
+                  prev[i1][i2] = true;
+                }
+              })
+            })
+            return [...prev]
+          })
+        }}>
+          lock all
+        </button>
+        <button onClick={()=>{
+          setimmutable(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return false }) }))
+        }}>
+          unlock all
+        </button>
         <p>{`Note Mode: ${noteMode.current}`}</p>
       </div>
 
