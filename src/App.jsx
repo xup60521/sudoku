@@ -187,9 +187,10 @@ const App = () => {
   }
 
   useEffect(()=>{
-    setSudoku(JSON.parse(localStorage.getItem("sudoku")).sudoku)
+    if (localStorage.getItem("sudoku") !== null)
+    {setSudoku(JSON.parse(localStorage.getItem("sudoku")).sudoku)
     setsmallnote(JSON.parse(localStorage.getItem("sudoku")).smallnote)
-    setimmutable(JSON.parse(localStorage.getItem("sudoku")).immutable)
+    setimmutable(JSON.parse(localStorage.getItem("sudoku")).immutable)}
   }, [])
 
   useEffect(()=>{
