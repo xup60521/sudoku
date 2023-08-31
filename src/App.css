@@ -1,5 +1,10 @@
 :root {
-  --block-width: 5rem;
+  --block-width: 6vw;
+  --border-width: 0.1rem;
+  --font-size: 4vw;
+  --note-font-size: 1vw;
+  --bg-color: rgb(98, 97, 97);
+  --the-very-background-color: #242424;
 }
 
 div.app {
@@ -9,6 +14,55 @@ div.app {
   height: 100vh;
   width: 100vw;
   z-index: -50;
+  background-color: var(--the-very-background-color);
+  box-sizing: border-box;
+  overflow-y: scroll;
+  transition: all 0.15s ease;
+}
+
+div.top {
+  position: absolute;
+  width: 100vw;
+  height: 2rem;
+  top: 0;
+  background-color: black;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;  
+  font-weight: bold;
+}
+
+div.top > button#openpopup {
+  all: unset;
+  margin-left: 0.5rem;  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+
+div.modal {
+  background-color: var(--the-very-background-color);
+  border: 0.1rem solid var(--bg-color);
+  border-radius: 0.5rem;
+  z-index: 11;
+  transition: all 0.1s ease;
+}
+
+div.modal > div.content {
+  padding: 0rem 1.5rem;
+}
+
+div.top.openpopup {
+  top: 0;
+
+}
+
+div.app.openpopup {
+  filter: blur(0.5rem);
+  transition: all 0.5s ease;
 }
 
 div#sudoku {
@@ -16,9 +70,10 @@ div#sudoku {
   width: calc(9*var(--block-width));
   height: calc(9*var(--block-width));
   color: white;
-  margin: auto;
+  margin: 0 1rem;
+  margin-top: 1.5rem;
   display: grid;
-  grid-template-columns: calc(3*var(--block-width)) calc(3*var(--block-width)) calc(3*var(--block-width)) ;
+  grid-template-columns: auto auto auto ;
   border: 0.1rem solid rgb(255, 253, 253);
 }
 
@@ -33,8 +88,8 @@ div.largeblock {
 }
 
 div.block {
-  width: calc(14.8rem/3);
-  height: calc(14.8rem/3);
+  width: calc(var(--block-width) - (2*var(--border-width) / 3));
+  height: calc(var(--block-width) - (2*var(--border-width) / 3));
   display: flex;
   justify-content: center;
   align-items: center;
@@ -43,8 +98,9 @@ div.block {
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
   user-select: none; /* Standard syntax */
-  font-size: 3rem;
+  font-size: var(--font-size);
   box-sizing: border-box;
+  
 } 
 
 div.block.highlighted {
@@ -76,21 +132,163 @@ div.block.warning {
 }
 
 div.block#noteMode {
-  font-size: 1rem;
+  font-size: var(--note-font-size);
   color: rgb(173, 173, 173);
-  
+  word-break: break-all;
+  text-align: center;
 }
 
 /*----------*/
 
-div#right-side {
-  width: 10rem;
-  border: 0.1rem solid grey;
-  padding: 0.5rem;
+div.right-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+div#other-place {
+  display: flex;
+  background-color: var(--bg-color);
+  color: white;
+  width: 15rem;
   border-radius: 0.5rem;
-  background-color: darkgrey;
-  color: black;
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
   user-select: none; /* Standard syntax */
+  margin-top: 0.5rem;;
+}
+
+div#other-place > button {
+  all: unset;
+  padding: 0.5rem;
+  border: 0.1rem solid var(--the-very-background-color);
+  cursor: pointer;
+  flex-grow: 1;
+}
+
+div.draggable {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: left;
+}
+
+div.draggable > div.handle {
+  background-color: transparent;
+  padding: 0.5rem 0rem;
+  padding-top: 1rem;;
+  width: calc(100% - 0.2rem);
+}
+
+div.draggable > div.handle > p {
+  background-color: white;
+  margin: 0;
+  height: 0.5rem;
+  border-radius: 0.5rem;
+  color: transparent;
+}
+
+div.tool {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  background-color: var(--bg-color);
+  color: white;
+  width: 30vw;
+  border-radius: 0.5rem;
+}
+
+div.tool > * {
+  all: unset;
+}
+
+div.tool > button {
+  width: 100%;
+  text-align: center;
+  height: 5vw;
+  border: 0.1rem solid var(--the-very-background-color);
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+div.tool > button#noteMode {
+  background-color: white;
+  color: black;
+  
+}
+
+div.tool > button#fixed {
+  background-color: white;
+  color: black;
+}
+
+div.tool > button#full {
+  background-color: var(--the-very-background-color);
+  color: var(--the-very-background-color);
+  pointer-events: none;
+}
+
+@media screen and (min-height: 120vw) {
+  :root {
+    --block-width: calc(100vw / 10);
+    --font-size: 7vw;
+    --note-font-size: 2.5vw;
+  }
+  div.app {
+    flex-direction: column;
+    justify-content: right;
+    align-items: center;
+    
+  }
+  div.tool {
+    width: 90.2vw;
+    padding: 0;
+  }
+
+  div.tool > button {
+    height: 3.5rem;
+  }
+
+  div.draggable > strong > p {
+    width: 80vw;
+  }
+
+  div#sudoku {
+    margin-top: 3rem;
+  }
+}
+
+@media screen and (min-width: 170vh) {
+  :root {
+    --block-width: calc(100vh / 10);
+    --font-size: 7vh;
+  }
+  div.top {
+    background-color: transparent;
+    width: 2rem;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    justify-content: left;
+    align-items: start;
+  }
+  div.top > span{
+    display: none;
+  }
+  div.top > button#openpopup {
+    margin: 1.5rem;
+  }
+  div#sudoku {
+    margin-top: 0;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

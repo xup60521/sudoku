@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import { grid2whole, whole2grid } from './algorithm';
+import Draggable, { DraggableCore } from 'react-draggable';
+import Popup from 'reactjs-popup';
+import {AiOutlineInfoCircle} from "react-icons/ai"
 
 const compareArrays = (a, b) => {
   return JSON.stringify(a) === JSON.stringify(b);
@@ -16,34 +19,26 @@ function indexOfAll(array, searchItem) {
   return indexes;
 }
 
-const adddeleteArrayElement = (arr, item) => {
-  const index = arr.indexOf(item);
-  if (index == -1) {
-    arr.unshift(item);
-  } else if (index !== -1) {
-    arr.splice(index, 1);
-  }
-  const a = arr.sort((a, b) => { return a - b })
-  return a;
-}
+
 
 const App = () => {
 
-  
+
 
   const [sudoku, setSudoku] = useState(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return `` }) }));
   const buf = Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return null }) });
   const [smallnote, setsmallnote] = useState(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return [] }) }))
   const [selectedBlock, setselectedBlock] = useState([2, 2]);
   const [immutable, setimmutable] = useState(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return false }) }));
+  const [openpopup, setopenpopup] = useState(false);
   const clickblock = (x, y) => {
     return (compareArrays(selectedBlock, [x, y]) ? setselectedBlock([null, null]) : setselectedBlock([x, y]))
   }
-  const noteMode = useRef(false);
+  const [noteMode, setnoteMode] = useState(false);
   const allowchange = (compareArrays(selectedBlock, [null, null]) ? false : true);
 
-  const handleKey = (e, x, y) => {
-    
+  const handleKey = (e) => {
+
     if (allowchange) {
 
       setselectedBlock((prev) => {
@@ -88,65 +83,69 @@ const App = () => {
         }
       })
 
-      if (e.key == "-") {setimmutable((prev)=>{
-        const x = selectedBlock[0];
-        const y = selectedBlock[1];
-        prev[x][y] = (prev[x][y]==true ? false : true);
-        return [...prev]
-      })}
+      if (e.key == "-") {
+        setimmutable((prev) => {
+          const x = selectedBlock[0];
+          const y = selectedBlock[1];
+          prev[x][y] = (prev[x][y] == true ? false : true);
+          return [...prev]
+        })
+      }
 
 
-      if (!noteMode.current) {
+      if (!noteMode) {
 
         // Edit Mode
         if (e.key == "+") {
-          noteMode.current = true;
+          setnoteMode(true)
         }
-        if (!immutable[selectedBlock[0]][selectedBlock[1]]) {setSudoku((prev) => {
+        if (!immutable[selectedBlock[0]][selectedBlock[1]]) {
+          setSudoku((prev) => {
 
-          if (["1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(e.key)) {
+            if (["1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(e.key)) {
 
-            setsmallnote((d) => {
+              setsmallnote((d) => {
 
-              d[selectedBlock[0]] = d[selectedBlock[0]].map((item) => {
-                return item.filter((as) => {
-                  return as !== e.key
+                d[selectedBlock[0]] = d[selectedBlock[0]].map((item) => {
+                  return item.filter((as) => {
+                    return as !== e.key
+                  })
                 })
+
+                for (let i = 0; i < 9; i++) {
+                  d[i][selectedBlock[1]] = d[i][selectedBlock[1]].filter((as) => { return as !== e.key })
+                }
+
+                Array.from({ length: 9 }, (v, ia) => { return null }).map((a, i) => {
+                  let coox = whole2grid(selectedBlock[0], selectedBlock[1])[0];
+                  let cooy = i;
+                  let x = grid2whole(coox, cooy)[0]
+                  let y = grid2whole(coox, cooy)[1]
+                  d[x][y] = d[x][y].filter((as) => {
+                    return as !== e.key
+                  })
+                })
+
+                return [...d]
               })
 
-              for (let i = 0; i < 9; i++) {
-                d[i][selectedBlock[1]] = d[i][selectedBlock[1]].filter((as) => { return as !== e.key })
-              }
-
-              Array.from({ length: 9 }, (v, ia) => { return null }).map((a, i) => {
-                let coox = whole2grid(selectedBlock[0], selectedBlock[1])[0];
-                let cooy = i;
-                let x = grid2whole(coox, cooy)[0]
-                let y = grid2whole(coox, cooy)[1]
-                d[x][y] = d[x][y].filter((as) => {
-                  return as !== e.key
-                })
-              })
-
-              return [...d]
-            })
 
 
+              prev[selectedBlock[0]][selectedBlock[1]] = e.key;
+              return [...prev]
+            } else if (e.key == "0") {
+              prev[selectedBlock[0]][selectedBlock[1]] = "";
+              return [...prev]
+            } else {
+              return [...prev]
+            }
+          })
+        }
 
-            prev[selectedBlock[0]][selectedBlock[1]] = e.key;
-            return [...prev]
-          } else if (e.key == "0") {
-            prev[selectedBlock[0]][selectedBlock[1]] = "";
-            return [...prev]
-          } else {
-            return [...prev]
-          }
-        })}
-
-      } else if (noteMode.current) {
+      } else if (noteMode) {
 
         if (e.key == "+") {
-          noteMode.current = false;
+          setnoteMode(false)
         }
 
         setsmallnote((prev) => {
@@ -154,12 +153,12 @@ const App = () => {
             const i = prev[selectedBlock[0]][selectedBlock[1]].indexOf(e.key);
             if (i == -1) {
               prev[selectedBlock[0]][selectedBlock[1]] = [...prev[selectedBlock[0]][selectedBlock[1]], e.key].sort((a, b) => { return a - b });
-              
+
               return [...prev]
 
             } else {
               prev[selectedBlock[0]][selectedBlock[1]].splice(i, 1).sort((a, b) => { return a - b });
-              
+
               return [...prev]
             }
 
@@ -168,13 +167,13 @@ const App = () => {
             prev[selectedBlock[0]][selectedBlock[1]] = [];
             return [...prev]
           } else {
-            
+
             return [...prev]
           }
         })
 
       } else {
-        noteMode.current = false;
+        setnoteMode(false)
       }
 
 
@@ -186,14 +185,15 @@ const App = () => {
 
   }
 
-  useEffect(()=>{
-    if (localStorage.getItem("sudoku") !== null)
-    {setSudoku(JSON.parse(localStorage.getItem("sudoku")).sudoku)
-    setsmallnote(JSON.parse(localStorage.getItem("sudoku")).smallnote)
-    setimmutable(JSON.parse(localStorage.getItem("sudoku")).immutable)}
+  useEffect(() => {
+    if (localStorage.getItem("sudoku") !== null) {
+      setSudoku(JSON.parse(localStorage.getItem("sudoku")).sudoku)
+      setsmallnote(JSON.parse(localStorage.getItem("sudoku")).smallnote)
+      setimmutable(JSON.parse(localStorage.getItem("sudoku")).immutable)
+    }
   }, [])
 
-  useEffect(()=>{
+  useEffect(() => {
     localStorage.setItem("sudoku", JSON.stringify({
       sudoku,
       smallnote,
@@ -202,7 +202,20 @@ const App = () => {
   }, [sudoku, smallnote, immutable])
 
   return (
-    <div className="app">
+    <div className={`app ${(openpopup? "openpopup": "")}`}>
+      
+      <div className={`top `}>
+        <span>Sudoku by Zup </span>
+        <button id="openpopup" onClick={()=>{setopenpopup((o)=>!o)}}><AiOutlineInfoCircle /></button>
+        <Popup open={openpopup} closeOnDocumentClick onClose={()=>{setopenpopup(false)}}>
+          <div className="modal">
+            <div className="content">
+              <h2>Sudoku by Zup</h2>
+              <p>數獨網頁版</p>
+            </div>
+          </div>
+        </Popup>
+      </div>
       <div id="sudoku" >
         {buf.map((a, i1) => {
           return (
@@ -225,12 +238,12 @@ const App = () => {
                   warning = "warning";
                 }
 
-                const unchangable = (immutable[x][y]== true ? "unchangable" : "");
+                const unchangable = (immutable[x][y] == true ? "unchangable" : "");
 
                 return (
                   <div
                     tabIndex={0}
-                    onKeyDown={(e) => { handleKey(e, i1, i2) }}
+                    onKeyDown={(e) => { handleKey(e) }}
                     className={`block ${selected} ${helpline} ${warning} ${assistedcolor} ${unchangable} `}
                     id={`${(!value ? "noteMode" : "")}`}
                     onClick={() => { clickblock(x, y) }}>
@@ -242,34 +255,53 @@ const App = () => {
         })
         }
       </div>
-      <div id="right-side">
-        <button onClick={() => {
-          setSudoku(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return `` }) }))
-          setsmallnote(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return [] }) }))
-          setimmutable(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return false }) }))
-        }}>reset
-        </button>
-        <button onClick={()=>{
-          setimmutable((prev)=>{
-            sudoku.map((d, i1)=>{
-              d.map((a, i2)=>{
-                if (a !== "") {
-                  prev[i1][i2] = true;
-                }
-              })
-            })
-            return [...prev]
-          })
-        }}>
-          lock all
-        </button>
-        <button onClick={()=>{
-          setimmutable(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return false }) }))
-        }}>
-          unlock all
-        </button>
-        <p>{`Note Mode: ${noteMode.current}`}</p>
+
+      <div className="right-side">
+        <Draggable handle='.handle'>
+          <div className="draggable">
+            <div className='handle'><p>-</p></div>
+            <div className="tool">
+              <button onKeyDown={(e) => { handleKey(e) }} onClick={() => { handleKey({ "key": "+" }) }} id={(noteMode ? "noteMode" : "")}>note</button>
+              <button onKeyDown={(e) => { handleKey(e) }} onClick={() => { handleKey({ "key": "-" }) }} id={(allowchange? (immutable[selectedBlock[0]][selectedBlock[1]]? "fixed": ""): "")}>fixed</button>
+              {[0, 7, 8, 9, 4, 5, 6, 1, 2, 3].map((d, i) => {
+                const full = ((indexOfAll(sudoku.flat(), `${d}`).length == 9) ? "full" : "")
+                return (
+                  <button onKeyDown={(e) => { handleKey(e) }} onClick={() => { handleKey({ "key": `${d}` }) }} id={full}>{(d == 0 ? "clear" : d)}</button>
+                )
+              })}
+            </div>
+            <div id="other-place">
+              <button onClick={() => {
+                setSudoku(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return `` }) }))
+                setsmallnote(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return [] }) }))
+                setimmutable(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return false }) }))
+              }}>reset
+              </button>
+              <button onClick={() => {
+                setimmutable((prev) => {
+                  sudoku.map((d, i1) => {
+                    d.map((a, i2) => {
+                      if (a !== "") {
+                        prev[i1][i2] = true;
+                      }
+                    })
+                  })
+                  return [...prev]
+                })
+              }}>
+                lock all
+              </button>
+              <button onClick={() => {
+                setimmutable(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return false }) }))
+              }}>
+                unlock all
+              </button>
+            </div>
+          </div>
+        </Draggable>
+
       </div>
+
 
     </div>
   )
