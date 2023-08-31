@@ -245,6 +245,8 @@ const App = () => {
       <div id="right-side">
         <button onClick={() => {
           setSudoku(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return `` }) }))
+          setsmallnote(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return [] }) }))
+          setimmutable(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return false }) }))
         }}>reset
         </button>
         <p>{`Note Mode: ${noteMode.current}`}</p>
