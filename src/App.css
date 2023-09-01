@@ -1,10 +1,12 @@
 :root {
-  --block-width: 6vw;
+  --top-height: 2rem;
+  --block-width: calc(5.4vw - var(--top-height) / 9);
   --border-width: 0.1rem;
   --font-size: 4vw;
   --note-font-size: 1vw;
   --bg-color: rgb(98, 97, 97);
   --the-very-background-color: #242424;
+  
 }
 
 div.app {
@@ -23,7 +25,7 @@ div.app {
 div.top {
   position: absolute;
   width: 100vw;
-  height: 2rem;
+  height: var(--top-height);
   top: 0;
   background-color: black;
   color: white;
@@ -151,12 +153,13 @@ div#other-place {
   display: flex;
   background-color: var(--bg-color);
   color: white;
-  width: 15rem;
+  width: fit-content;
   border-radius: 0.5rem;
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
   user-select: none; /* Standard syntax */
   margin-top: 0.5rem;;
+  flex-wrap: wrap;
 }
 
 div#other-place > button {
@@ -259,7 +262,7 @@ div.tool > button#full {
   }
 }
 
-@media screen and (min-width: 170vh) {
+@media screen and (min-width: 205vh) {
   :root {
     --block-width: calc(100vh / 10);
     --font-size: 7vh;
