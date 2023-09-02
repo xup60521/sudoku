@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
-import './App.css'
-import { grid2whole, whole2grid } from './algorithm';
-import Draggable, { DraggableCore } from 'react-draggable';
-import Popup from 'reactjs-popup';
-import {AiOutlineInfoCircle} from "react-icons/ai"
+import { useEffect, useRef, useState } from "react";
+import "./App.css";
+import { grid2whole, whole2grid } from "./algorithm";
+import Draggable, { DraggableCore } from "react-draggable";
+import Popup from "reactjs-popup";
+import { AiOutlineInfoCircle } from "react-icons/ai";
 
 const compareArrays = (a, b) => {
   return JSON.stringify(a) === JSON.stringify(b);
@@ -19,197 +19,218 @@ function indexOfAll(array, searchItem) {
   return indexes;
 }
 
-
-
 const App = () => {
-
-
-
-  const [sudoku, setSudoku] = useState(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return `` }) }));
-  const buf = Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return null }) });
-  const [smallnote, setsmallnote] = useState(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return [] }) }))
+  const [sudoku, setSudoku] = useState(
+    Array.from({ length: 9 }, (v, i) => {
+      return Array.from({ length: 9 }, (v, i) => {
+        return ``;
+      });
+    })
+  );
+  const buf = Array.from({ length: 9 }, (v, i) => {
+    return Array.from({ length: 9 }, (v, i) => {
+      return null;
+    });
+  });
+  const [smallnote, setsmallnote] = useState(
+    Array.from({ length: 9 }, (v, i) => {
+      return Array.from({ length: 9 }, (v, i) => {
+        return [];
+      });
+    })
+  );
   const [selectedBlock, setselectedBlock] = useState([2, 2]);
-  const [immutable, setimmutable] = useState(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return false }) }));
+  const [immutable, setimmutable] = useState(
+    Array.from({ length: 9 }, (v, i) => {
+      return Array.from({ length: 9 }, (v, i) => {
+        return false;
+      });
+    })
+  );
   const [openpopup, setopenpopup] = useState(false);
   const clickblock = (x, y) => {
-    return (compareArrays(selectedBlock, [x, y]) ? setselectedBlock([null, null]) : setselectedBlock([x, y]))
-  }
+    return compareArrays(selectedBlock, [x, y])
+      ? setselectedBlock([null, null])
+      : setselectedBlock([x, y]);
+  };
   const [noteMode, setnoteMode] = useState(false);
-  const allowchange = (compareArrays(selectedBlock, [null, null]) ? false : true);
+  const allowchange = compareArrays(selectedBlock, [null, null]) ? false : true;
 
   const handleKey = (e) => {
-
     if (allowchange) {
-
       setselectedBlock((prev) => {
         switch (e.key) {
-          case 'ArrowUp': {
+          case "ArrowUp": {
             if (selectedBlock[1] != 0) {
-
-              return [prev[0], prev[1] - 1]
-
+              return [prev[0], prev[1] - 1];
             } else {
-              return prev
+              return prev;
             }
           }
-          case 'ArrowDown': {
+          case "ArrowDown": {
             if (selectedBlock[1] != 8) {
-
-              return [prev[0], prev[1] + 1]
-
+              return [prev[0], prev[1] + 1];
             } else {
-              return prev
+              return prev;
             }
           }
-          case 'ArrowLeft': {
+          case "ArrowLeft": {
             if (selectedBlock[0] != 0) {
-
-              return [prev[0] - 1, prev[1]]
-
+              return [prev[0] - 1, prev[1]];
             } else {
-              return prev
+              return prev;
             }
           }
-          case 'ArrowRight': {
+          case "ArrowRight": {
             if (selectedBlock[0] != 8) {
-
-              return [prev[0] + 1, prev[1]]
-
+              return [prev[0] + 1, prev[1]];
             } else {
-              return prev
+              return prev;
             }
           }
-          default: return prev
+          default:
+            return prev;
         }
-      })
+      });
 
       if (e.key == "-") {
         setimmutable((prev) => {
           const x = selectedBlock[0];
           const y = selectedBlock[1];
-          prev[x][y] = (prev[x][y] == true ? false : true);
-          return [...prev]
-        })
+          prev[x][y] = prev[x][y] == true ? false : true;
+          return [...prev];
+        });
       }
 
-
       if (!noteMode) {
-
         // Edit Mode
         if (e.key == "+") {
-          setnoteMode(true)
+          setnoteMode(true);
         }
         if (!immutable[selectedBlock[0]][selectedBlock[1]]) {
           setSudoku((prev) => {
-
             if (["1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(e.key)) {
-
               setsmallnote((d) => {
-
                 d[selectedBlock[0]] = d[selectedBlock[0]].map((item) => {
                   return item.filter((as) => {
-                    return as !== e.key
-                  })
-                })
+                    return as !== e.key;
+                  });
+                });
 
                 for (let i = 0; i < 9; i++) {
-                  d[i][selectedBlock[1]] = d[i][selectedBlock[1]].filter((as) => { return as !== e.key })
+                  d[i][selectedBlock[1]] = d[i][selectedBlock[1]].filter(
+                    (as) => {
+                      return as !== e.key;
+                    }
+                  );
                 }
 
-                Array.from({ length: 9 }, (v, ia) => { return null }).map((a, i) => {
+                Array.from({ length: 9 }, (v, ia) => {
+                  return null;
+                }).map((a, i) => {
                   let coox = whole2grid(selectedBlock[0], selectedBlock[1])[0];
                   let cooy = i;
-                  let x = grid2whole(coox, cooy)[0]
-                  let y = grid2whole(coox, cooy)[1]
+                  let x = grid2whole(coox, cooy)[0];
+                  let y = grid2whole(coox, cooy)[1];
                   d[x][y] = d[x][y].filter((as) => {
-                    return as !== e.key
-                  })
-                })
+                    return as !== e.key;
+                  });
+                });
 
-                return [...d]
-              })
-
-
+                return [...d];
+              });
 
               prev[selectedBlock[0]][selectedBlock[1]] = e.key;
-              return [...prev]
+              return [...prev];
             } else if (e.key == "0") {
               prev[selectedBlock[0]][selectedBlock[1]] = "";
-              return [...prev]
+              return [...prev];
             } else {
-              return [...prev]
+              return [...prev];
             }
-          })
+          });
         }
-
       } else if (noteMode) {
-
         if (e.key == "+") {
-          setnoteMode(false)
+          setnoteMode(false);
         }
 
         setsmallnote((prev) => {
           if (["1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(e.key)) {
             const i = prev[selectedBlock[0]][selectedBlock[1]].indexOf(e.key);
             if (i == -1) {
-              prev[selectedBlock[0]][selectedBlock[1]] = [...prev[selectedBlock[0]][selectedBlock[1]], e.key].sort((a, b) => { return a - b });
+              prev[selectedBlock[0]][selectedBlock[1]] = [
+                ...prev[selectedBlock[0]][selectedBlock[1]],
+                e.key,
+              ].sort((a, b) => {
+                return a - b;
+              });
 
-              return [...prev]
-
+              return [...prev];
             } else {
-              prev[selectedBlock[0]][selectedBlock[1]].splice(i, 1).sort((a, b) => { return a - b });
+              prev[selectedBlock[0]][selectedBlock[1]]
+                .splice(i, 1)
+                .sort((a, b) => {
+                  return a - b;
+                });
 
-              return [...prev]
+              return [...prev];
             }
-
-
           } else if (e.key == "0") {
             prev[selectedBlock[0]][selectedBlock[1]] = [];
-            return [...prev]
+            return [...prev];
           } else {
-
-            return [...prev]
+            return [...prev];
           }
-        })
-
+        });
       } else {
-        setnoteMode(false)
+        setnoteMode(false);
       }
-
-
     } else {
       if (e.key == "+") {
-        setnoteMode((o)=>!o)
+        setnoteMode((o) => !o);
       }
-      
-
     }
-
-  }
+  };
 
   useEffect(() => {
     if (localStorage.getItem("sudoku") !== null) {
-      setSudoku(JSON.parse(localStorage.getItem("sudoku")).sudoku)
-      setsmallnote(JSON.parse(localStorage.getItem("sudoku")).smallnote)
-      setimmutable(JSON.parse(localStorage.getItem("sudoku")).immutable)
+      setSudoku(JSON.parse(localStorage.getItem("sudoku")).sudoku);
+      setsmallnote(JSON.parse(localStorage.getItem("sudoku")).smallnote);
+      setimmutable(JSON.parse(localStorage.getItem("sudoku")).immutable);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem("sudoku", JSON.stringify({
-      sudoku,
-      smallnote,
-      immutable
-    }))
-  }, [sudoku, smallnote, immutable])
+    localStorage.setItem(
+      "sudoku",
+      JSON.stringify({
+        sudoku,
+        smallnote,
+        immutable,
+      })
+    );
+  }, [sudoku, smallnote, immutable]);
 
   return (
-    <div className={`app ${(openpopup? "openpopup": "")}`}>
-      
+    <div className={`app ${openpopup ? "openpopup" : ""}`}>
       <div className={`top `}>
         <span>Sudoku by Zup </span>
-        <button id="openpopup" onClick={()=>{setopenpopup((o)=>!o)}}><AiOutlineInfoCircle /></button>
-        <Popup open={openpopup} closeOnDocumentClick onClose={()=>{setopenpopup(false)}}>
+        <button
+          id="openpopup"
+          onClick={() => {
+            setopenpopup((o) => !o);
+          }}
+        >
+          <AiOutlineInfoCircle />
+        </button>
+        <Popup
+          open={openpopup}
+          closeOnDocumentClick
+          onClose={() => {
+            setopenpopup(false);
+          }}
+        >
           <div className="modal">
             <div className="content">
               <h2>Sudoku by Zup</h2>
@@ -218,95 +239,246 @@ const App = () => {
           </div>
         </Popup>
       </div>
-      <div id="sudoku" >
+      <div id="sudoku">
         {buf.map((a, i1) => {
           return (
             <div className="largeblock">
               {a.map((d, i2) => {
-
-
-                const x = grid2whole(i1, i2)[0]
-                const y = grid2whole(i1, i2)[1]
+                const x = grid2whole(i1, i2)[0];
+                const y = grid2whole(i1, i2)[1];
                 const value = sudoku[x][y];
                 const note = smallnote[x][y];
-                const selected = (compareArrays(selectedBlock, [x, y]) ? "blockSelected" : "");
-                const helpline = ((selectedBlock[0] == x || selectedBlock[1] == y) ? "highlighted" : "");
-                const assistedcolor = ((indexOfAll(sudoku.flat(), value).length > 1 && !compareArrays(selectedBlock, [null, null])) ? (sudoku[selectedBlock[0]][selectedBlock[1]] == value ? "assistedcolor" : "") : "");
-                let warning = ((indexOfAll(sudoku[x], value).length > 1 || indexOfAll(sudoku.map((d) => { return d[y] }), value).length > 1) ? "warning" : "");
+                const selected = compareArrays(selectedBlock, [x, y])
+                  ? "blockSelected"
+                  : "";
+                const helpline =
+                  selectedBlock[0] == x || selectedBlock[1] == y
+                    ? "highlighted"
+                    : "";
+                const assistedcolor =
+                  indexOfAll(sudoku.flat(), value).length > 1 &&
+                  !compareArrays(selectedBlock, [null, null])
+                    ? sudoku[selectedBlock[0]][selectedBlock[1]] == value
+                      ? "assistedcolor"
+                      : ""
+                    : "";
+                let warning =
+                  indexOfAll(sudoku[x], value).length > 1 ||
+                  indexOfAll(
+                    sudoku.map((d) => {
+                      return d[y];
+                    }),
+                    value
+                  ).length > 1
+                    ? "warning"
+                    : "";
 
-                if (indexOfAll(Array.from({ length: 9 }, (v, i) => { return i }).map((d, i) => {
-                  return sudoku[grid2whole(i1, i)[0]][grid2whole(i1, i)[1]]
-                }), value).length > 1) {
+                if (
+                  indexOfAll(
+                    Array.from({ length: 9 }, (v, i) => {
+                      return i;
+                    }).map((d, i) => {
+                      return sudoku[grid2whole(i1, i)[0]][grid2whole(i1, i)[1]];
+                    }),
+                    value
+                  ).length > 1
+                ) {
                   warning = "warning";
                 }
 
-                const unchangable = (immutable[x][y] == true ? "unchangable" : "");
+                const unchangable =
+                  immutable[x][y] == true ? "unchangable" : "";
 
                 return (
                   <div
                     tabIndex={0}
-                    onKeyDown={(e) => { handleKey(e) }}
+                    onKeyDown={(e) => {
+                      handleKey(e);
+                    }}
                     className={`block ${selected} ${helpline} ${warning} ${assistedcolor} ${unchangable} `}
-                    id={`${(!value ? "noteMode" : "")}`}
-                    onClick={() => { clickblock(x, y) }}>
-                    {`${(value ? value : note)}`}
+                    id={`${!value ? "noteMode" : ""}`}
+                    onClick={() => {
+                      clickblock(x, y);
+                    }}
+                  >
+                    {`${value ? value : note}`}
                   </div>
-                )
+                );
               })}
-            </div>)
-        })
-        }
+            </div>
+          );
+        })}
       </div>
 
       <div className="right-side">
-        <Draggable handle='.handle'>
+        <Draggable handle=".handle">
           <div className="draggable">
-            <div className='handle'><p>-</p></div>
+            <div className="handle">
+              <p>-</p>
+            </div>
             <div className="tool">
-              <button onKeyDown={(e) => { handleKey(e) }} onClick={() => { handleKey({ "key": "+" }) }} id={(noteMode ? "noteMode" : "")}>note</button>
-              <button onKeyDown={(e) => { handleKey(e) }} onClick={() => { handleKey({ "key": "-" }) }} id={(allowchange? (immutable[selectedBlock[0]][selectedBlock[1]]? "fixed": ""): "")}>fixed</button>
+              <button
+                onKeyDown={(e) => {
+                  handleKey(e);
+                }}
+                onClick={() => {
+                  handleKey({ key: "+" });
+                }}
+                id={noteMode ? "noteMode" : ""}
+              >
+                note
+              </button>
+              <button
+                onKeyDown={(e) => {
+                  handleKey(e);
+                }}
+                onClick={() => {
+                  handleKey({ key: "-" });
+                }}
+                id={
+                  allowchange
+                    ? immutable[selectedBlock[0]][selectedBlock[1]]
+                      ? "fixed"
+                      : ""
+                    : ""
+                }
+              >
+                fixed
+              </button>
               {[0, 7, 8, 9, 4, 5, 6, 1, 2, 3].map((d, i) => {
-                const full = ((indexOfAll(sudoku.flat(), `${d}`).length == 9) ? "full" : "")
+                const full =
+                  indexOfAll(sudoku.flat(), `${d}`).length == 9 ? "full" : "";
                 return (
-                  <button onKeyDown={(e) => { handleKey(e) }} onClick={() => { handleKey({ "key": `${d}` }) }} id={full}>{(d == 0 ? "clear" : d)}</button>
-                )
+                  <button
+                    onKeyDown={(e) => {
+                      handleKey(e);
+                    }}
+                    onClick={() => {
+                      handleKey({ key: `${d}` });
+                    }}
+                    id={full}
+                  >
+                    {d == 0 ? "clear" : d}
+                  </button>
+                );
               })}
             </div>
             <div id="other-place">
-              <button onClick={() => {
-                setSudoku(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return `` }) }))
-                setsmallnote(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return [] }) }))
-                setimmutable(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return false }) }))
-              }}>reset
-              </button>
-              <button onClick={() => {
-                setimmutable((prev) => {
-                  sudoku.map((d, i1) => {
-                    d.map((a, i2) => {
-                      if (a !== "") {
-                        prev[i1][i2] = true;
-                      }
+              <button
+                onClick={() => {
+                  setSudoku(
+                    Array.from({ length: 9 }, (v, i) => {
+                      return Array.from({ length: 9 }, (v, i) => {
+                        return ``;
+                      });
                     })
-                  })
-                  return [...prev]
-                })
-              }}>
+                  );
+                  setsmallnote(
+                    Array.from({ length: 9 }, (v, i) => {
+                      return Array.from({ length: 9 }, (v, i) => {
+                        return [];
+                      });
+                    })
+                  );
+                  setimmutable(
+                    Array.from({ length: 9 }, (v, i) => {
+                      return Array.from({ length: 9 }, (v, i) => {
+                        return false;
+                      });
+                    })
+                  );
+                }}
+              >
+                reset
+              </button>
+              <button
+                onClick={() => {
+                  setimmutable((prev) => {
+                    sudoku.map((d, i1) => {
+                      d.map((a, i2) => {
+                        if (a !== "") {
+                          prev[i1][i2] = true;
+                        }
+                      });
+                    });
+                    return [...prev];
+                  });
+                }}
+              >
                 lock all
               </button>
-              <button onClick={() => {
-                setimmutable(Array.from({ length: 9 }, (v, i) => { return Array.from({ length: 9 }, (v, i) => { return false }) }))
-              }}>
+              <button
+                onClick={() => {
+                  setimmutable(
+                    Array.from({ length: 9 }, (v, i) => {
+                      return Array.from({ length: 9 }, (v, i) => {
+                        return false;
+                      });
+                    })
+                  );
+                }}
+              >
                 unlock all
+              </button>
+              <button
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      "Sudoku Solver by https://leetcode.com/problems/sudoku-solver/solutions/988304/concise-javascript-dfs-with-line-by-line-explanation/"
+                    )
+                  ) {
+                    setSudoku((prev) => {
+                      let board = prev;
+                      var solveSudoku = function () {
+                        for (let i = 0; i < board.length; i++) {
+                          for (let j = 0; j < board.length; j++) {
+                            if (board[i][j] === "") {
+                              for (let l = 1; l < 10; l++) {
+                                if (isValid( i, j, l.toString())) {
+                                  board[i][j] = l.toString();
+                                  let solved = solveSudoku(board);
+                                  if (solved !== false) return solved; // if we never hit false outside this loop then it means the board is a solution
+                                  board[i][j] = ""; // if it was false then reset the value
+                                }
+                              }
+                              return false; // if we exit the for loop it means there was no solution so return false
+                            }
+                          }
+                        }
+                        return board;
+                      };
+
+                      function isValid(i, j, l) {
+                        for (let p = 0; p < board.length; p++) {
+                          if (board[i][p] === l) return false;
+                          if (board[p][j] === l) return false;
+
+                          let gridVal =
+                            board[3 * Math.floor(i / 3) + Math.floor(p / 3)][
+                              3 * Math.floor(j / 3) + (p % 3)
+                            ];
+                          // 3 * Math.floor(i/3) and 3 * Math.floor(j/3) are the coordinates for
+                          // the top-left square of the 3x3 grid that the value is in
+                          if (gridVal === l) return false;
+                        }
+
+                        return true;
+                      }
+                      solveSudoku()
+
+                      return [...board];
+                    });
+                  }
+                }}
+              >
+                solver
               </button>
             </div>
           </div>
         </Draggable>
-
       </div>
-
-
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
